@@ -175,6 +175,29 @@ static void Bsp_SystemClockConfig(void)
     RCC_OscInitTypeDef rccOscInit = {0};
     RCC_ClkInitTypeDef rccClkInit = {0};
 
+#if defined(STM32H723xx)
+    rccOscInit.OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSI;
+    rccOscInit.HSIState = RCC_HSI_DIV1;
+    rccOscInit.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+    rccOscInit.LSIState = RCC_LSI_ON;
+    rccOscInit.PLL.PLLState = RCC_PLL_ON;
+    rccOscInit.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+    rccOscInit.PLL.PLLM = 4;
+    rccOscInit.PLL.PLLN = 50;
+    rccOscInit.PLL.PLLP = 2;
+    rccOscInit.PLL.PLLQ = 4;
+    rccOscInit.PLL.PLLR = 2;
+    HAL_RCC_OscConfig(&rccOscInit);
+
+    rccClkInit.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                           RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    rccClkInit.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    rccClkInit.SYSCLKDivider = RCC_SYSCLK_DIV1;
+    rccClkInit.AHBCLKDivider = RCC_HCLK_DIV2;
+    rccClkInit.APB1CLKDivider = RCC_APB1_DIV2;
+    rccClkInit.APB2CLKDivider = RCC_APB2_DIV2;
+    HAL_RCC_ClockConfig(&rccClkInit, FLASH_LATENCY_4);
+#else
     __HAL_RCC_PWR_CLK_ENABLE();
 #if defined(PWR_CR_VOS)
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
@@ -199,6 +222,7 @@ static void Bsp_SystemClockConfig(void)
     rccClkInit.APB1CLKDivider = RCC_HCLK_DIV2;
     rccClkInit.APB2CLKDivider = RCC_HCLK_DIV1;
     HAL_RCC_ClockConfig(&rccClkInit, FLASH_LATENCY_3);
+#endif
 }
 
 static void Bsp_GpioInit(void)
@@ -242,8 +266,12 @@ static void Bsp_I2c1Init(void)
     HAL_GPIO_Init(GPIOB, &gpioInit);
 
     bsp.hi2c1.Instance = I2C1;
+#if defined(STM32H723xx)
+    bsp.hi2c1.Init.Timing = 0x00901954;
+#else
     bsp.hi2c1.Init.ClockSpeed = 400000; // 400 kHz Fast Mode
     bsp.hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+#endif
     bsp.hi2c1.Init.OwnAddress1 = 0;
     bsp.hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
     bsp.hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -310,11 +338,13 @@ void EXTI0_IRQHandler(void)
 
 void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
 {
+    (void)hrtc;
     // Despertar acionado pelo RTC
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+    (void)GPIO_Pin;
     // Despertar acionado pelo botao manual de teste
 }
 
