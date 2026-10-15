@@ -121,7 +121,7 @@ static void Main_PrintDiagnostics(const sVibrationResult_t *pResult)
     }
 
     snprintf(msg, sizeof(msg),
-             "\r\n[Ciclo #%lu] Vibracao RMS: X=%.3f g | Y=%.3f g | Z=%.3f g | Total=%.3f g\r\n",
+             "\r\n[Ciclo #%lu] RMS: X=%.3f g | Y=%.3f g | Z=%.3f g | Total=%.3f g\r\n",
              (unsigned long)mainApp.cycleCounter,
              pResult->rmsX,
              pResult->rmsY,
@@ -129,17 +129,23 @@ static void Main_PrintDiagnostics(const sVibrationResult_t *pResult)
              pResult->rmsTotal);
     Bsp_UartTransmit(msg);
 
-    if(pResult->severity == eVIB_SEVERITY_GOOD)
+    snprintf(msg, sizeof(msg),
+             "INDICADORES AVANCADOS: Fator de Crista = %.2f | Curtose (Kurtosis) = %.2f\r\n",
+             pResult->crestFactor,
+             pResult->kurtosis);
+    Bsp_UartTransmit(msg);
+
+    if(pResult->diagnosis == eDIAG_BEARING_FAULT)
     {
-        Bsp_UartTransmit("STATUS: BOM (Operacao Normal dentro dos limites ISO 10816)\r\n");
+        Bsp_UartTransmit("DIAGNOSTICO: ALERTA DE ROLAMENTO! (Impactos transientes detectados por Curtose > 4.5)\r\n");
     }
-    else if(pResult->severity == eVIB_SEVERITY_ACCEPTABLE)
+    else if(pResult->diagnosis == eDIAG_UNBALANCE_SEVERITY)
     {
-        Bsp_UartTransmit("STATUS: ACEITAVEL (Requer acompanhamento preventivo)\r\n");
+        Bsp_UartTransmit("DIAGNOSTICO: DESBALANCEAMENTO / DESALINHAMENTO SEVERO (ISO 10816 Classe D)\r\n");
     }
     else
     {
-        Bsp_UartTransmit("STATUS: ALARME CRITICO! (Vibracao severa detectada - Manutencao Imediata!)\r\n");
+        Bsp_UartTransmit("DIAGNOSTICO: MAQUINA SAUDAVEL (Espectro estavel, operacao normal)\r\n");
     }
 }
 

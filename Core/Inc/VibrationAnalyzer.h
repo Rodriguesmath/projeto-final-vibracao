@@ -30,13 +30,23 @@ typedef enum
     eVIB_SEVERITY_ALARM
 } eVibrationSeverity_t;
 
+typedef enum
+{
+    eDIAG_NORMAL = 0,
+    eDIAG_BEARING_FAULT,      // Falha incipiente de rolamento (Kurtosis elevada)
+    eDIAG_UNBALANCE_SEVERITY  // Desbalanceamento mecanico severo (RMS elevado)
+} eDiagnosisType_t;
+
 typedef struct
 {
     float rmsX;
     float rmsY;
     float rmsZ;
     float rmsTotal;
+    float crestFactor;        // Fator de Crista (Pico / RMS)
+    float kurtosis;           // Curtose (4º momento estatistico)
     eVibrationSeverity_t severity;
+    eDiagnosisType_t     diagnosis;
     bool  isAlarmActive;
 } sVibrationResult_t;
 

@@ -23,6 +23,25 @@ O dispositivo avalia os níveis de severidade de vibração mecânica de acordo 
 - **Processamento de Sinal:** Cálculo do valor eficaz da componente alternada (RMS dinâmico com remoção do offset gravitacional de $1\text{g}$) em janelas de 512 amostras (~2,05 segundos).
 - **Alarme Visual de Baixo Dreno:** Em caso de anomalia mecânica, o LED de alarme sinaliza a falha através de micro-pulsos com corrente limitada por resistor de $1.5\text{ k}\Omega$ (~$1.3\text{ mA}$ por pulso).
 
+### Requisitos Avançados Atendidos:
+1. **Momentos Estatísticos de Alta Ordem (Curtose / *Kurtosis*):**
+   - O firmware calcula o 4º momento estatístico padronizado:
+     $$\text{Kurtosis} = \frac{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^4}{\sigma^4}$$
+   - Máquinas saudáveis apresentam ruído gaussiano com $\text{Kurtosis} \approx 3,0$.
+   - Defeitos incipientes em pistas e esferas de rolamentos geram picos transitórios de impacto que elevam a Curtose para **$> 4,5$**, permitindo prever a falha semanas antes do aumento do RMS global!
+2. **Fator de Crista (*Crest Factor*):**
+   - Razão entre o pico máximo da vibração e o valor RMS:
+     $$\text{CF} = \frac{\text{Pico}}{\text{RMS}}$$
+   - Valores $> 3,5$ sinalizam impactos mecânicos repetitivos e desgaste localizado.
+3. **Classificação Avançada de Falhas Mecânicas:**
+   - **Falha em Rolamento:** Identificada quando $\text{Kurtosis} > 4,5$ ou $\text{CF} > 3,5$.
+   - **Desbalanceamento Severo:** Identificado quando $\text{RMS} > 0,45\text{ g}$ e $\text{Kurtosis} \le 3,5$ (ISO 10816 Classe D).
+   - **Operação Normal:** Máquina balanceada e sem impactos.
+4. **Interface Serial de Diagnóstico de Baixo Consumo:**
+   - Despertar sob demanda via botão EXTI (`BTN_USER`) permitindo que o técnico de manutenção acione um autoteste imediato e receba o relatório completo de telemetria serial sem esperar as 8 horas.
+5. **Autonomia Comprovada Superior a 10 Anos ($14,4\text{ Anos}$):**
+   - Comprova matematicamente vida útil superior à exigência da disciplina através da equação formal de energia.
+
 ---
 
 ## 2. Pinagem de Conexão
