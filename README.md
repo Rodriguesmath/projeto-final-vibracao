@@ -37,6 +37,11 @@ O dispositivo avalia os níveis de severidade de vibração mecânica de acordo 
 | **Botão de Teste (EXTI)** | `PA0` | `PA0` / `PC13` (Blue Btn) | Despertar manual sob demanda |
 | **UART Telemetria** | `PA9` (TX) | `PA9` / `PD8` (ST-Link VCP) | Diagnóstico serial a 115200 bps |
 
+### Diagrama Esquemático do Circuito
+![Esquemático do Monitor de Vibração](Docs/esquematico_circuito.png)
+
+> O arquivo vetorial completo está disponível em: [Esquematico_Placa4_Projeto_Final_Monitor_Vibracao.pdf](Docs/Esquematico_Placa4_Projeto_Final_Monitor_Vibracao.pdf)
+
 ---
 
 ## 3. Estimativa de Consumo e Prova Matemática de Autonomia (> 10 Anos)
